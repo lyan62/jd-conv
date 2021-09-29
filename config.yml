@@ -1,0 +1,45 @@
+train:
+  train_data: "./data/train.csv"
+  eval_data: "./data/eval.csv"
+  test_data: "./data/test.csv"
+  ckp_dir: "./ckp"
+  
+
+  loss_func: "cross_entropy"
+  use_pretrained_embed: false
+  model: "AttnRNN"
+  rnn_type: 'GRU'
+  sampler: None  # 'weighted' or 'random' or 'None'
+  shuffling: True
+
+  add_pos_embed: False                     # 1. add pos tag embedding to embedding vector
+  cnn_rnn: False                           # 2. add cnn before rnn
+  apply_attn: True                         # 3. apply attention and obtain weighted context
+  attn_type: 'structured_self_attn'        # 3.1 apply attention type: 'structured_self_attn' | 'self_attn'
+  # if attn_type=='structured_self_attn':     # 3.2 sett attn hyper-parameter if use structured self attn
+  da: 128
+  r: 5
+  follow_paper: false  # if True use attention matrix, otherwise use averaged attention vector
+  concat_out_emb: true     # calcal attention using concatenation of hidden output and embedding vectors
+  
+  combine_hidden: False                    # 4. hidden state type: if False, concat hidden, if true combine hidden
+  add_target_embed: False                  # 5. apply target_embed, use bilinear as out layer, if False, linear
+
+  # model hyper parameter
+  embed_size: 300
+  hidden_size: 512
+  batch_size: 256
+  nlayers: 2
+  log_interval: 500
+  eval_interval: 2000
+  lr: 0.0001
+  lr_decay: 0.1
+  drop_embed_prob: 0.6
+  variational_dropout_prob: 0.2
+  drop_rnn_prob: 0
+  drop_out_prob: 0
+  is_bidirectional: True
+
+  num_epochs: 10
+  load_ckp: False
+
