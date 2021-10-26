@@ -33,9 +33,9 @@ train:
   hidden_size: 512
   batch_size: 256
   nlayers: 2
-  log_interval: 500
-  eval_interval: 2000
-  lr: 0.0001
+  log_interval: 50
+  eval_interval: 100
+  lr: 0.00001
   lr_decay: 0.1
   drop_embed_prob: 0.6
   variational_dropout_prob: 0.2
@@ -43,6 +43,6 @@ train:
   drop_out_prob: 0
   is_bidirectional: True
 
-  num_epochs: 10
+  num_epochs: 20
   load_ckp: False
 
