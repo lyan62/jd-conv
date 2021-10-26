@@ -8,33 +8,12 @@ import os
 from collections import defaultdict
 from sklearn.metrics import confusion_matrix, classification_report
 import pandas as pd
-# import sentencepiece as spm
 import pickle
 import logging as log
-from collections import Counter
-from tqdm import tqdm
+
 
 use_cuda = torch.cuda.is_available()
 
-
-def build_dict(df):
-    print("building dictionary....")
-    source_freqs = Counter()
-    label_freqs = Counter()
-    for idx, row in tqdm(df.iterrows(), total=len(df)):
-        for c in row["query"]:
-            source_freqs[str(c)] += 1
-        label_freqs[str(row["role"])] += 1
-
-    s_word2index = {v: i + 2 for i, (v, c) in enumerate(list(source_freqs.items()))}
-    s_word2index['<PAD>'] = 0
-    s_word2index['<UNK>'] = 1
-
-    t_word2index = {v: i for i, (v, c) in enumerate(list(label_freqs.items()))}
-    data_dict = {'source': s_word2index,
-                 'target': t_word2index}
-
-    return data_dict
 
 def bucket_by_length(data):
     "bucket sentence by length. with step of 5"
