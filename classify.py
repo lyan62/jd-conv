@@ -83,7 +83,7 @@ def train_epoch(train_set, eval_set, predictor, argsimizer, epoch, val_history_a
 
     # set up data loader
     data_loader = DataLoader(train_set, args.batch_size, shuffle=shuffling, collate_fn=my_collate_fn,
-                             num_workers=4, pin_memory=True, sampler=data_sampler)
+                             num_workers=4, pin_memory=False, sampler=data_sampler)
 
     hidden = predictor.init_hidden(args.batch_size) # init hidden
 
