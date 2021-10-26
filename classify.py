@@ -166,16 +166,16 @@ def eval(eval_set, predictor, args):
 def train(args):
 
     # initiliaze models
-    train_set = querySet(args.train_data)
+    train_set = querySet(args.train_data, args.query_col_name, args.target_col_name)
     print("total num of queries in train: %d" % train_set.__len__())
     if os.path.exists("./output/dict.pkl"):
         dictionary = pickle.load(open(os.path.join("./output/", "dict.pkl"), "rb"))
     else:
-        dictionary = build_dict(train_set.df)
+        dictionary = train_set.build_dict()
         creat_output_dir("output")
         pickle.dump(dictionary, open(os.path.join("./output/", "dict.pkl"), "wb"))
 
-    eval_set = querySet(args.eval_data)
+    eval_set = querySet(args.eval_data, args.query_col_name, args.target_col_name)
 
     predictor = getattr(models, args.model)(dictionary, args)
     if use_cuda:

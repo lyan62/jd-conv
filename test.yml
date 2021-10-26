@@ -1,7 +1,9 @@
 train:
-  train_data: "./data/train.csv"
-  eval_data: "./data/dev.csv"
-  test_data: "./data/test.csv"
+  query_col_name: "msg"
+  target_col_name: "intent"
+  train_data: "./data/crosswoz_data_splitted/train.csv"
+  eval_data: "./data/crosswoz_data_splitted/dev.csv"
+  test_data: "./data/crosswoz_data_splitted/test.csv"
   ckp_dir: "./ckp"
   
 
