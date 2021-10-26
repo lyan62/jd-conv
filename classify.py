@@ -208,6 +208,7 @@ def train(args):
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--train", dest="train", action='store_true', help="train model")
+    argparser.add_argument("--out", dest="out_dir", action='store', default="output")
     argparser.add_argument("--config", dest="config", action='store', type=str)
     params = argparser.parse_args()
 
