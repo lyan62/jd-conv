@@ -5,6 +5,7 @@ train:
   eval_data: "./data/crosswoz_data_splitted/dev.csv"
   test_data: "./data/crosswoz_data_splitted/test.csv"
   ckp_dir: "./ckp"
+  out_dir: "./output"
   
 
   loss_func: "cross_entropy"
