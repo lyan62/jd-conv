@@ -23,4 +23,4 @@ class BasicModule(torch.nn.Module):
                                  map_location=lambda storage, loc: storage)
         else:
             state = torch.load(os.path.join(ckp_dir, self.model_name+'.pth'))
-        self.load_state_dict(state)
+        self.load_state_dict(state, False)
