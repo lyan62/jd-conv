@@ -44,7 +44,7 @@ train:
   drop_out_prob: 0
   is_bidirectional: True
 
-  num_epochs: 20
+  num_epochs: 50
   load_ckp: False
 
 test:
