@@ -74,7 +74,7 @@ class queryPairSet(Dataset):
         cur_row = self.df.iloc[index]
         text1 = cur_row[self.query1_col_name][:self.max_len]
         text2 = cur_row[self.query2_col_name][:self.max_len]
-        label = self.dict["target"].get(str(cur_row[self.target_col_name]))
+        label = self.dict["target"].get(str(cur_row[self.target_col_name]), 0)
         query = [self.dict["source"].get(c, 1) for c in text1] + [2] + [self.dict["source"].get(c, 1) for c in text2]
         return query, label, text1+"<SEP>"+text2
 
@@ -104,7 +104,8 @@ class queryPairSet(Dataset):
         s_word2index['<UNK>'] = 1
         s_word2index['<SEP>'] = 2
 
-        t_word2index = {v: i for i, (v, c) in enumerate(list(label_freqs.items()))}
+        t_word2index = {v: i+1 for i, (v, c) in enumerate(list(label_freqs.items()))}
+        s_word2index['<UNK>'] = 0
         data_dict = {'source': s_word2index,
                      'target': t_word2index}
 
