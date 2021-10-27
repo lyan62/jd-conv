@@ -90,7 +90,8 @@ def train_epoch(train_set, eval_set, predictor, argsimizer, epoch, val_history_a
     for batched_data, lengths in data_loader:
         batched_variables = {k: variableFromSentence(v) for k, v in batched_data.items() if k!="text"}
         # input variable( B x L), pos_variable ( B X L ), target_variable(1 x B)
-
+        if batched_variables['input'].size(0) != args.batch_size:
+            continue
         loss, output = iter(batched_variables, lengths, predictor, hidden, 'TRAIN', args, argsimizer=argsimizer)
 
         total_loss += loss
@@ -141,12 +142,13 @@ def eval(eval_set, predictor, args):
     # get dataset
     batch_size = args.batch_size
     data_loader = DataLoader(eval_set, batch_size, shuffle=False, collate_fn=my_collate_fn, num_workers=4,
-                             pin_memory=True)
+                             pin_memory=False)
 
     hidden = predictor.init_hidden(batch_size)
     for batched_data, lengths in data_loader:
         batched_variables = {k: variableFromSentence(v) for k, v in batched_data.items() if k!='text'}
-
+        if batched_variables['input'].size(0) != args.batch_size:
+            continue
         loss, output = iter(batched_variables, lengths, predictor, hidden,'EVAL',args)
 
         total_loss += loss
