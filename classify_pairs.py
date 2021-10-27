@@ -177,11 +177,11 @@ def train(args):
     print("total num of queries in train: %d" % train_set.__len__())
     dict_path = "./output/" + args.dict_path_prefix + "_dict.pkl"
     if os.path.exists(dict_path):
-        dictionary = pickle.load(open(os.path.join("./output/", "dict.pkl"), "rb"))
+        dictionary = pickle.load(open(dict_path, "rb"))
     else:
         dictionary = train_set.build_dict()
         creat_output_dir("output")
-        pickle.dump(dictionary, open(os.path.join("./output/", "dict.pkl"), "wb"))
+        pickle.dump(dictionary, open(dict_path, "wb"))
 
     eval_set = queryPairSet(args.eval_data,
                             args.query1_col_name,
