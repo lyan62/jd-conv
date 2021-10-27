@@ -322,3 +322,6 @@ if __name__ == "__main__":
 
     if params.train:
         train(train_args)
+    else:
+        test_args =  args.test
+        pred(test_args)
