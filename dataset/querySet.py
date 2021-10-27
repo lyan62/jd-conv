@@ -60,19 +60,20 @@ class querySet(Dataset):
         return pickle.load(open(dict_path, "rb"))
 
 class queryPairSet(Dataset):
-    def __init__(self, data_path, query1_col_name, query2_col_name, target_col_name, dict_out_prefix):
+    def __init__(self, data_path, query1_col_name, query2_col_name, target_col_name, dict_out_prefix, max_len=50):
         self.df = pd.read_csv(data_path, index_col=0)
         self.query1_col_name = query1_col_name
         self.query2_col_name = query2_col_name
         self.target_col_name = target_col_name
         self.dict_path =  "./output/"+dict_out_prefix+"_dict.pkl"
         self.dict = self.build_dict()
+        self.max_len=max_len
 
 
     def __getitem__(self, index):
         cur_row = self.df.iloc[index]
-        text1 = cur_row[self.query1_col_name]
-        text2 = cur_row[self.query2_col_name]
+        text1 = cur_row[self.query1_col_name][:self.max_len]
+        text2 = cur_row[self.query2_col_name][:self.max_len]
         label = self.dict["target"].get(str(cur_row[self.target_col_name]))
         query = [self.dict["source"].get(c, 1) for c in text1] + [2] + [self.dict["source"].get(c, 1) for c in text2]
         return query, label, text1+"<SEP>"+text2
@@ -133,7 +134,9 @@ if __name__ == "__main__":
     train_set = queryPairSet("./data/crosswoz_chat_pairs/dev.csv",
                          query1_col_name="msg1",
                          query2_col_name="msg2",
-                         target_col_name="label")
+                         target_col_name="label",
+                         dict_out_prefix="pair")
+    print(train_set.dict["target"])
     from torch.utils.data import Dataset, DataLoader
     data_loader = DataLoader(train_set, batch_size=3, shuffle=True, collate_fn=my_collate_fn,
                              num_workers=4, pin_memory=True, sampler=None)
