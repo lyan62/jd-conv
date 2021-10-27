@@ -229,8 +229,8 @@ def pred(args):
     target_seqs = []
     attn_seqs = []
 
-
-    dictionary = pickle.load(open(os.path.join("./output/", "dict.pkl"), "rb"))
+    dict_path = "./output/" + args.dict_path_prefix + "_dict.pkl"
+    dictionary = pickle.load(open(dict_path, "rb"))
     test_set = queryPairSet(args.test_data,
                             args.query1_col_name,
                             args.query2_col_name,
