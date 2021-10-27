@@ -105,7 +105,7 @@ class queryPairSet(Dataset):
         s_word2index['<SEP>'] = 2
 
         t_word2index = {v: i+1 for i, (v, c) in enumerate(list(label_freqs.items()))}
-        s_word2index['<UNK>'] = 0
+        t_word2index['<UNK>'] = len(t_word2index)+1
         data_dict = {'source': s_word2index,
                      'target': t_word2index}
 
