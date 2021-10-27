@@ -1,11 +1,12 @@
 train:
-  query_col_name: "msg"
-  target_col_name: "intent"
-  train_data: "./data/crosswoz_data_splitted/train.csv"
-  eval_data: "./data/crosswoz_data_splitted/dev.csv"
-  test_data: "./data/crosswoz_data_splitted/test.csv"
-  ckp_dir: "./ckp"
+  query1_col_name: "msg1"
+  query2_col_name: "msg2"
+  target_col_name: "label"
+  train_data: "./data/crosswoz_chat_pairs/train.csv"
+  eval_data: "./data/crosswoz_chat_pairs/dev.csv"
+  ckp_dir: "./ckp_pair"
   out_dir: "./output"
+  dict_path_prefix: "pair"
   
 
   loss_func: "cross_entropy"
@@ -47,11 +48,13 @@ train:
   load_ckp: False
 
 test:
-  query_col_name: "msg"
-  target_col_name: "intent"
-  test_data: "./data/crosswoz_data_splitted/test.csv"
-  ckp_dir: "./ckp"
+  query1_col_name: "msg1"
+  query2_col_name: "msg2"
+  target_col_name: "label"
+  test_data: "./data/crosswoz_chat_pairs/test.csv"
+  ckp_dir: "./ckp_pair"
   out_dir: "./output"
+  dict_path_prefix: "pair"
 
   loss_func: "cross_entropy"
   use_pretrained_embed: false
@@ -80,11 +83,4 @@ test:
   nlayers: 2
   log_interval: 50
   eval_interval: 100
-  lr: 0.00001
-  lr_decay: 0.1
-  drop_embed_prob: 0.6
-  variational_dropout_prob: 0.2
-  drop_rnn_prob: 0
-  drop_out_prob: 0
-  is_bidirectional: True
-  analysis_out: "pred_outputs.json"
+  analysis_out: "pair_pred_outputs.json"
