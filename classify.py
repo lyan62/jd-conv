@@ -16,6 +16,7 @@ import multiprocessing
 import logging as log
 import time
 import argparse
+import json
 
 def calc_loss(loss_func, prediction, target_batches):
     if loss_func == 'cross_entropy':
@@ -55,8 +56,7 @@ def iter(batched_variables, lengths, predictor, hidden, train_flag, args, argsim
 
     output_dict = {'pred':out.data.view(-1),
                    'conf':conf.data.view(-1),
-                   'target':target,
-                   }
+                   'target':target}
 
     if args.apply_attn:
         output_dict['attn'] = scores
@@ -204,6 +204,92 @@ def train(args):
     save_output(args.out_dir, 'train_acc', train_history_acc)
     save_output(args.out_dir, 'eval_acc', val_history_acc)
 
+
+def pred(args):
+    total_loss = 0
+    batch_count = 0
+    correct = 0
+    total = 0
+
+    input_seqs = []
+    predictions = []
+    confidences = []
+    target_seqs = []
+    attn_seqs = []
+
+
+    dictionary = pickle.load(open(os.path.join("./output/", "dict.pkl"), "rb"))
+    test_set = querySet(args.test_data, args.query_col_name, args.target_col_name)
+
+    # local previous best model
+    predictor = getattr(models, args.model)(dictionary, args)
+    if use_cuda:
+        predictor = predictor.cuda()
+    predictor.load(args.ckp_dir)
+
+    # laod test set
+    batch_size = args.batch_size
+    data_loader = DataLoader(test_set, batch_size, shuffle=False, collate_fn=my_collate_fn, num_workers=4,
+                             pin_memory=True)
+
+
+    hidden = predictor.init_hidden(batch_size)
+
+
+    for batched_data, lengths in data_loader:
+        input_seqs.extend(list(batched_data["text"]))
+
+        batched_variables = {k: variableFromSentence(v) for k, v in batched_data.items() if k != 'text'}
+
+        loss, output = iter(batched_variables, lengths, predictor, hidden, 'EVAL', args)
+
+        total_loss += loss
+        batch_count += 1
+
+        if use_cuda:
+            input_seq = [[w for w in s if w != 0] for s in batched_variables['input'].cpu().data.tolist()]
+            conf = output['conf'].cpu().tolist()
+            out = output['pred'].cpu().tolist()
+            target = output['target'].cpu().tolist()
+            attn_seq = output['attn'].cpu().data.tolist()
+
+        else:
+            input_seq = [[w for w in s if w != 0] for s in batched_variables['input'].data.tolist()]
+            conf = output['conf'].tolist()
+            out = output['pred'].tolist()
+            target = output['target'].tolist()
+            attn_seq = output['attn'].data.tolist()
+
+        input_seqs.extend(input_seq)
+        predictions.extend(out)
+        confidences.extend(conf)
+        target_seqs.extend(target)
+        if args.apply_attn:
+            attn_seqs.extend(attn_seq)
+
+        total += output['target'].size(0)
+        correct += torch.sum(torch.eq(output['pred'], output['target'])).item()
+
+
+    avg_loss = total_loss / batch_count  # average loss
+    avg_acc = float(correct / total)
+    log.info("Test average loss:%.4f, overall accuracy %.4f" % (avg_loss, float(correct / total)))
+
+    if not os.path.exists("analysis"):
+        os.mkdir("analysis")
+
+    with open ("analysis/pred_outputs.json", "w") as output_json:
+        output_obj = {"input_seqs": input_seqs,
+                    "predictions": predictions,
+                    "confidences": confidences,
+                    "target_seqs": target_seqs,
+                    "attn_seqs": attn_seqs,
+                    "dict": dictionary}
+
+        json.dump(output_obj, output_json)
+
+
+    return avg_loss, avg_acc
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
